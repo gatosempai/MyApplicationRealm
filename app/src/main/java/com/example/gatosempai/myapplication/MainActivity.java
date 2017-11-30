@@ -134,11 +134,11 @@ public class MainActivity extends AppCompatActivity
 
             //RealmProvider.initEcc();
         } else if (id == R.id.nav_send) {
-//            PruebaModel pruebas = new PruebaModel();
-//            pruebas.setName("1654165561");
-//            savePrueba(pruebas);
+            PruebaModel pruebas = new PruebaModel();
+            pruebas.setName("1654165561");
+            savePrueba(pruebas);
 
-//            readPrueba();
+            readPrueba();
 
             //listAlgorithms();
         }
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
-    /*private void readPrueba() {
+    private void readPrueba() {
         final Realm realm = RealmProvider.getInstance();
         final PruebaDB db = new PruebaDBImpl(realm);
         db.getPruebaData(4L)
@@ -355,5 +355,5 @@ public class MainActivity extends AppCompatActivity
                         System.out.println("ORP savePrueba");
                     }
                 });
-    }*/
+    }
 }
