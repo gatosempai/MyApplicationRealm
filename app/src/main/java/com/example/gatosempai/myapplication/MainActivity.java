@@ -23,6 +23,9 @@ import com.example.gatosempai.myapplication.common.data.database.model.LoginInst
 import com.example.gatosempai.myapplication.common.data.database.model.OtraDB;
 import com.example.gatosempai.myapplication.common.data.database.model.OtraDBImpl;
 import com.example.gatosempai.myapplication.common.data.database.model.OtraModel;
+import com.example.gatosempai.myapplication.common.data.database.model.PruebaDB;
+import com.example.gatosempai.myapplication.common.data.database.model.PruebaDBImpl;
+import com.example.gatosempai.myapplication.common.data.database.model.PruebaModel;
 import com.example.gatosempai.myapplication.common.data.database.realm.RealmProvider;
 
 import java.security.Provider;
@@ -108,30 +111,34 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_slideshow) {
-
-
-        } else if (id == R.id.nav_manage) {
-            //            LoginInstalledData login = new LoginInstalledData();
+//            LoginInstalledData login = new LoginInstalledData();
 //            login.setUserName("Prueba");
 //            login.setUserNumber("123456");
 //            saveLogin(login);
 
             readLogin();
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_manage) {
 //            InvestmentTermFolios term = new InvestmentTermFolios();
 //            term.setsInvestmentDueDate("ya fue");
 //            saveInvestment(term);
 
             readInvestment();
 
+        } else if (id == R.id.nav_share) {
+//            OtraModel otra = new OtraModel();
+//            otra.setName("efewfvrglbmronkvmcslaxnfvlkmc");
+//            saveOtra(otra);
+
+            readOtra();
+
             //RealmProvider.initEcc();
         } else if (id == R.id.nav_send) {
-            //OtraModel otra = new OtraModel();
-            //otra.setName("efewfvrglbmronkvmcslaxnfvlkmc");
-            //saveOtra(otra);
+//            PruebaModel pruebas = new PruebaModel();
+//            pruebas.setName("1654165561");
+//            savePrueba(pruebas);
 
-            //readOtra();
+//            readPrueba();
 
             //listAlgorithms();
         }
@@ -300,4 +307,53 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
     }
+
+    /*private void readPrueba() {
+        final Realm realm = RealmProvider.getInstance();
+        final PruebaDB db = new PruebaDBImpl(realm);
+        db.getPruebaData(4L)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<PruebaModel>() {
+                    @Override
+                    public void onCompleted() {
+                        //unused
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("ORP",  e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(PruebaModel dataSaved) {
+                        System.out.println("ORP readPrueba name: "+dataSaved.getName());
+                    }
+                });
+    }
+
+    private void savePrueba(PruebaModel otra) {
+        final Realm realm = RealmProvider.getInstance();
+        final PruebaDB db = new PruebaDBImpl(realm);
+        otra.setId(4L);
+        db.addPruebaData(otra)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<PruebaModel>() {
+                    @Override
+                    public void onCompleted() {
+                        //unused
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("ORP", e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(PruebaModel data) {
+                        System.out.println("ORP savePrueba");
+                    }
+                });
+    }*/
 }
