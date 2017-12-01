@@ -26,6 +26,9 @@ import com.example.gatosempai.myapplication.common.data.database.model.OtraModel
 import com.example.gatosempai.myapplication.common.data.database.model.PruebaDB;
 import com.example.gatosempai.myapplication.common.data.database.model.PruebaDBImpl;
 import com.example.gatosempai.myapplication.common.data.database.model.PruebaModel;
+import com.example.gatosempai.myapplication.common.data.database.model.SecondDB;
+import com.example.gatosempai.myapplication.common.data.database.model.SecondDBImpl;
+import com.example.gatosempai.myapplication.common.data.database.model.SecondModel;
 import com.example.gatosempai.myapplication.common.data.database.realm.RealmProvider;
 
 import java.security.Provider;
@@ -107,36 +110,41 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
+            SecondModel second = new SecondModel();
+            second.setName("22222222");
+            saveSecond(second);
+
+            //readSecond();
         } else if (id == R.id.nav_gallery) {
 
 
         } else if (id == R.id.nav_slideshow) {
-//            LoginInstalledData login = new LoginInstalledData();
-//            login.setUserName("Prueba");
-//            login.setUserNumber("123456");
-//            saveLogin(login);
+            //LoginInstalledData login = new LoginInstalledData();
+            //login.setUserName("Prueba");
+            //login.setUserNumber("123456");
+            //saveLogin(login);
 
             readLogin();
 
         } else if (id == R.id.nav_manage) {
-//            InvestmentTermFolios term = new InvestmentTermFolios();
-//            term.setsInvestmentDueDate("ya fue");
-//            saveInvestment(term);
+            //InvestmentTermFolios term = new InvestmentTermFolios();
+            //term.setsInvestmentDueDate("ya fue");
+            //saveInvestment(term);
 
             readInvestment();
 
         } else if (id == R.id.nav_share) {
-//            OtraModel otra = new OtraModel();
-//            otra.setName("efewfvrglbmronkvmcslaxnfvlkmc");
-//            saveOtra(otra);
+            //OtraModel otra = new OtraModel();
+            //otra.setName("efewfvrglbmronkvmcslaxnfvlkmc");
+            //saveOtra(otra);
 
             readOtra();
 
             //RealmProvider.initEcc();
         } else if (id == R.id.nav_send) {
-            PruebaModel pruebas = new PruebaModel();
-            pruebas.setName("1654165561");
-            savePrueba(pruebas);
+            //PruebaModel pruebas = new PruebaModel();
+            //pruebas.setName("1654165561");
+            //savePrueba(pruebas);
 
             readPrueba();
 
@@ -353,6 +361,55 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onNext(PruebaModel data) {
                         System.out.println("ORP savePrueba");
+                    }
+                });
+    }
+
+    private void readSecond() {
+        final Realm realm = RealmProvider.getInstance();
+        final SecondDB db = new SecondDBImpl(realm);
+        db.getSecondData(5L)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SecondModel>() {
+                    @Override
+                    public void onCompleted() {
+                        //unused
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("ORP",  e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(SecondModel dataSaved) {
+                        System.out.println("ORP readSecond name: "+dataSaved.getName());
+                    }
+                });
+    }
+
+    private void saveSecond(SecondModel otra) {
+        final Realm realm = RealmProvider.getInstance();
+        final SecondDB db = new SecondDBImpl(realm);
+        otra.setId(5L);
+        db.addSecondData(otra)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SecondModel>() {
+                    @Override
+                    public void onCompleted() {
+                        //unused
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("ORP", e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(SecondModel data) {
+                        System.out.println("ORP saveSecond");
                     }
                 });
     }

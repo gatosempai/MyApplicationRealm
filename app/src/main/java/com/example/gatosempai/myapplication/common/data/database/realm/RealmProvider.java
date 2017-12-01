@@ -19,6 +19,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
@@ -57,10 +58,9 @@ public class RealmProvider {
         sRealmConfiguration = new RealmConfiguration.Builder()
                 .name(REALM_NAME)
                 .schemaVersion(1)
-                .deleteRealmIfMigrationNeeded()
+                .migration(new MyMigration())
                 .encryptionKey(key)
                 .build();
-        Realm.removeDefaultConfiguration();
         Realm.setDefaultConfiguration(sRealmConfiguration);
     }
 
@@ -155,7 +155,7 @@ public class RealmProvider {
         }
 
         private void generateAndStoreKey() {
-            final SharedPreferences pref = mContext
+            /*final SharedPreferences pref = mContext
                     .getSharedPreferences(SHARED_PREFENCE_NAME, Context.MODE_PRIVATE);
             final String existentKey = pref.getString(ENCRYPTED_KEY, "");
             if (existentKey.isEmpty()) {
@@ -164,7 +164,29 @@ public class RealmProvider {
                 final SharedPreferences.Editor edit = pref.edit();
                 edit.putString(ENCRYPTED_KEY, enryptedKeyB64);
                 edit.apply();
+            }*/
+
+            final KeyStore keyStore;
+            try {
+                keyStore = KeyStore.getInstance(ANDROID_KEY_STORE);
+                keyStore.load(null);
+                PrivateKey pKey = (PrivateKey) keyStore.getEntry(KEY_ALIAS, null);
+                keyStore.setEntry("uno",
+                        new KeyStore.SecretKeyEntry( generateKey() ),
+                        new KeyStore.PasswordProtection(CryptoUtils.saltingPassword(CryptoUtils.toHex(pKey.getEncoded())).toCharArray()));
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (UnrecoverableEntryException e) {
+                e.printStackTrace();
             }
+
+
         }
 
         private static byte[] rsaEncrypt(byte[] secret) {
@@ -197,7 +219,7 @@ public class RealmProvider {
          *
          * @return A random key to use in Realm encryption
          */
-        private static byte[] generateKey() {
+        private static SecretKey generateKey() {
             SecretKey key = null;
             try {
                 final SecureRandom secureRandom = new SecureRandom();
@@ -208,18 +230,45 @@ public class RealmProvider {
             } catch (final NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
-            return (key == null) ? null : key.getEncoded();
+            return key;
         }
 
         private byte[] getSecretKey() {
+            //byte[] key = BYTES;
+            //final SharedPreferences pref = mContext
+            //        .getSharedPreferences(SHARED_PREFENCE_NAME, Context.MODE_PRIVATE);
+            //final String existentKey = pref.getString(ENCRYPTED_KEY, null);
+            //if (existentKey != null) {
+            //    final byte[] enryptedKeyB64 = existentKey.getBytes();
+            //    final byte[] encryptedKey = Base64.decode(enryptedKeyB64, Base64.DEFAULT);
+            //    key = rsaDecrypt(encryptedKey);
+            //}
+
             byte[] key = BYTES;
-            final SharedPreferences pref = mContext
-                    .getSharedPreferences(SHARED_PREFENCE_NAME, Context.MODE_PRIVATE);
-            final String existentKey = pref.getString(ENCRYPTED_KEY, null);
-            if (existentKey != null) {
-                final byte[] enryptedKeyB64 = existentKey.getBytes();
-                final byte[] encryptedKey = Base64.decode(enryptedKeyB64, Base64.DEFAULT);
-                key = rsaDecrypt(encryptedKey);
+            final KeyStore keyStore;
+            try {
+                keyStore = KeyStore.getInstance(ANDROID_KEY_STORE);
+                keyStore.load(null);
+                PrivateKey pKey = (PrivateKey) keyStore.getEntry(KEY_ALIAS, null);
+                pKey.getEncoded();
+
+                final KeyStore.SecretKeyEntry mEntry = (KeyStore.SecretKeyEntry)
+                        keyStore.getEntry("uno",
+                                new KeyStore.PasswordProtection(CryptoUtils.saltingPassword(CryptoUtils.toHex(pKey.getEncoded())).toCharArray()));
+                key = mEntry.getSecretKey().getEncoded();
+                //keyStore.setEntry("uno",
+                //        new KeyStore.SecretKeyEntry( generateKey() ),
+                //        new KeyStore.PasswordProtection(CryptoUtils.saltingPassword(CryptoUtils.toHex(pKey.getEncoded())).toCharArray()));
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (UnrecoverableEntryException e) {
+                e.printStackTrace();
             }
             return key;
         }
@@ -253,4 +302,6 @@ public class RealmProvider {
             return bytes;
         }
     }
+
+
 }

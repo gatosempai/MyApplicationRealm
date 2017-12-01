@@ -1,7 +1,9 @@
 package com.example.gatosempai.myapplication.common.data.database.realm;
 
 import io.realm.DynamicRealm;
+import io.realm.FieldAttribute;
 import io.realm.RealmMigration;
+import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 
 /**
@@ -18,23 +20,21 @@ public class MyMigration implements RealmMigration {
 
         // Access the Realm schema in order to create, modify or delete classes and their fields.
         final RealmSchema schema = realm.getSchema();
+        System.out.println("ORP migration old version: " + oldVersion);
+        System.out.println("ORP migration new version: " + newVersion);
         /***********************************************
          // Version 0
          class Seed                   // add a new model class
          String mValue;
          ************************************************/
         // Migrate from version 1 to version 2
-        if (oldVersion == 0) {
+        if (oldVersion == 1) {
 
             // Create a new class
-//            RealmObjectSchema nipSchema = schema.get("Nip");
-//            nipSchema.transform(new RealmObjectSchema.Function() {
-//                @Override
-//                public void apply(DynamicRealmObject obj) {
-//                    obj.set("mValue", obj.getString("mValue"));
-//                }
-//            });
-//            oldVersion++;
+            RealmObjectSchema petSchema = schema.create("SecondModel")
+                    .addField("id", long.class, FieldAttribute.PRIMARY_KEY)
+                    .addField("name", String.class);
+            oldVersion++;
         }
 
         /***********************************************
