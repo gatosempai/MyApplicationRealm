@@ -1,11 +1,7 @@
 package com.example.gatosempai.myapplication.common.data.database.realm;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.security.KeyPairGeneratorSpec;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
-import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -170,19 +166,21 @@ public class RealmProvider {
             try {
                 keyStore = KeyStore.getInstance(ANDROID_KEY_STORE);
                 keyStore.load(null);
-                PrivateKey pKey = (PrivateKey) keyStore.getEntry(KEY_ALIAS, null);
-                keyStore.setEntry("uno",
+
+                KeyStore.PrivateKeyEntry privateKeyEntry =
+                        (KeyStore.PrivateKeyEntry) keyStore.getEntry(KEY_ALIAS, null);
+
+
+                //KeyStore.Entry entry = keyStore.getEntry(KEY_ALIAS, null);
+                System.out.println("ORP private key entry to string: "+privateKeyEntry.toString());
+                System.out.println("ORP private key entry format: "+privateKeyEntry.getPrivateKey().getFormat());
+                String pass = CryptoUtils.saltingPassword(CryptoUtils.toHex(privateKeyEntry.getPrivateKey().getEncoded()));
+                System.out.println("ORP private key entry pass: "+pass);
+                keyStore.setEntry(KEY_ALIAS,
                         new KeyStore.SecretKeyEntry( generateKey() ),
-                        new KeyStore.PasswordProtection(CryptoUtils.saltingPassword(CryptoUtils.toHex(pKey.getEncoded())).toCharArray()));
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
-            } catch (CertificateException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (UnrecoverableEntryException e) {
+                        new KeyStore.PasswordProtection("".toCharArray()));
+            } catch (KeyStoreException | CertificateException | IOException |
+                    NoSuchAlgorithmException | UnrecoverableEntryException e) {
                 e.printStackTrace();
             }
 
@@ -253,7 +251,7 @@ public class RealmProvider {
                 pKey.getEncoded();
 
                 final KeyStore.SecretKeyEntry mEntry = (KeyStore.SecretKeyEntry)
-                        keyStore.getEntry("uno",
+                        keyStore.getEntry(KEY_ALIAS,
                                 new KeyStore.PasswordProtection(CryptoUtils.saltingPassword(CryptoUtils.toHex(pKey.getEncoded())).toCharArray()));
                 key = mEntry.getSecretKey().getEncoded();
                 //keyStore.setEntry("uno",
